@@ -1,0 +1,53 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Scanner;
+
+public class SQL {
+    private static final String url = "jdbc:mysql://localhost:3306/forum?serverTimezone=Europe/Moscow&useSSL=false";
+
+    private static final String user = "root";
+    private static final String password = "exowolf11";
+
+    private static Connection con;
+    private static Statement stmt;
+    private static ResultSet rs;
+    public static void main(String args[]) {
+        String query = "SELECT * FROM users";
+        String add = "INSERT INTO users (id, name,country,city,adress,phone,email) VALUES ('7','ООО Шуба','Россия','Чебоксары','ул. Петрова, д.4','237-89-08','mex@mail.ru')";
+        String update = "UPDATE users SET name='Институт ядерных технологий',phone='511-11-11' WHERE name='НИИ Атоммашстрой'";
+        String delete = "DELETE FROM users WHERE name='Левачев Н.Н.'";
+        try {
+            // opening database connection to MySQL server
+            con = DriverManager.getConnection(url, user, password);
+
+            // getting Statement object to execute query
+            stmt = con.createStatement();
+            stmt.executeUpdate(add);
+            System.out.println("Enter name,country,city,adress,phone,email");
+            Scanner scan = new Scanner(System.in);
+            String enter = "INSERT INTO users (name,country,city,adress,phone,email) VALUES ('"+scan.nextLine()+"','"+scan.nextLine()+"','"+scan.nextLine()+"','"+scan.nextLine()+"','"+scan.nextLine()+"','"+scan.nextLine()+"')";
+            stmt.executeUpdate(enter);
+            stmt.executeUpdate(update);
+            stmt.executeUpdate(delete);
+
+            // executing SELECT query
+            rs = stmt.executeQuery(query);
+            while (rs.next()) {
+               // int count = rs.getInt(1);
+              // System.out.println("Total number of users in the table : " + count);
+                System.out.println( "id: " + rs.getString("id")+" | "+ "name: "+ rs.getString("name")+" | "+"country: "+ rs.getString("country")+" | "+ "city: "+ rs.getString("city")+" | "+"adress: "+ rs.getString("adress")+" | "+ "phone: "+ rs.getString("phone")+" | "+ "email: "+ rs.getString("email"));
+            }
+
+        } catch (SQLException sqlEx) {
+            sqlEx.printStackTrace();
+        } finally {
+            //close connection ,stmt and resultset here
+            try { con.close(); } catch(SQLException se) { /*can't do anything */ }
+            try { stmt.close(); } catch(SQLException se) { /*can't do anything */ }
+            try { rs.close(); } catch(SQLException se) { /*can't do anything */ }
+        }
+    }
+}
